@@ -2,6 +2,11 @@
 
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
 
+## Tutorials
+1. What is Redis and why it exists : https://www.youtube.com/watch?v=5YqP18Gyop0
+2. Complete local setup to learn Redis : https://www.youtube.com/watch?v=UEm0mHeXdxk
+
+## Redis
 Let’s understand Redis with an analogy.
 
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
