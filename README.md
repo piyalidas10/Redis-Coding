@@ -67,6 +67,7 @@ The database remains the “source of truth.”
 - repeated expensive queries
 
 ## Common Redis use cases
+<img src="imgs/redis_redis_use_cases.png" width="100%" />
 **1. Caching**
 
 Store frequently accessed data like product lists, menus, etc.
@@ -159,6 +160,6 @@ The series goal is:
 - do practical coding
 - help developers become more advanced backend engineers
 
-<img src="imgs/redis_redis_use_cases.png" width="100%" />
+
 
 
