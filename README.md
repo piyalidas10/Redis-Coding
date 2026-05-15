@@ -159,6 +159,6 @@ The series goal is:
 - do practical coding
 - help developers become more advanced backend engineers
 
-
+<img src="imgs/redis_redis_use_cases.png" width="100%" />
 
 
