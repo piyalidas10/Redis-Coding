@@ -45,13 +45,12 @@ That’s why Redis is often called an in-memory database/store.
 All are acceptable depending on context.
 
 **Then the speaker explains the typical architecture:**
-```
-User → Backend Application
-Backend checks Redis first
-If data exists in Redis → fast response
-If not → query database (MongoDB/Postgres/MySQL)
-Then store hot/frequently accessed data into Redis for future requests
-```
+1. User → Backend Application
+2. Backend checks Redis first
+3. If data exists in Redis → fast response
+4. If not → query database (MongoDB/Postgres/MySQL)
+5. Then store hot/frequently accessed data into Redis for future requests
+
 <img src="imgs/redis_cache_architechture.png" width="100%" />
 
 **Important point:** Redis is NOT a replacement for the database.
@@ -62,7 +61,99 @@ The database remains the “source of truth.”
 - read pressure
 - repeated expensive queries
 
-The speaker then explains common Redis use cases:
+## Common Redis use cases
+**1. Caching**
+
+Store frequently accessed data like product lists, menus, etc.
+
+Example:  
+Swiggy or Zomato menus are probably served from cache rather than querying databases every time.
+
+**2. Session Store**
+
+Store user login/session data in Redis so all backend servers can quickly verify sessions.
+
+**3. OTP Storage**
+
+OTPs expire quickly, so storing them in Redis with TTL (time to live) is ideal.
+
+Example:
+```
+OTP = 434343
+TTL = 3 minutes
+```
+After expiration, Redis auto-removes it.
+
+**4. Rate Limiting**
+
+Prevent spam login attempts or OTP abuse.
+
+Example:
+- Track request counts by IP/user
+- Block temporarily after too many attempts
+
+**5. Job Queues / Background Workers**
+
+Use Redis queues for:
+- emails
+- notifications
+- report generation
+
+Workers pull tasks from queues and process them asynchronously.
+
+Then the speaker explains Redis key-value structure:
+
+Examples:
+```
+product:all
+otp:9876543210
+session:user123
+```
+
+Values may contain:
+```
+arrays
+JSON
+objects
+user data
+```
+
+And then comes the important Redis feature:
+
+**TTL (Time To Live)**
+
+TTL defines how long data remains valid.
+
+Example:
+- OTP valid for 90 seconds
+- After that it becomes invalid or auto-deleted
+
+## Redis is NOT a solution for every problem
+
+Don’t blindly use Redis everywhere.
+
+Use Redis only if your problem matches scenarios like:
+- reducing read pressure
+- temporary expiring data
+- shared counters
+- rate limiting
+- background jobs
+- caching hot data
+
+Then the speaker briefly mentions Redis alternatives:
+- KeyDB
+- DragonflyDB
+- Valkey
+- Upstash
+
+Most advertise themselves as “drop-in replacements” for Redis.
+
+The series goal is:
+- remove fear of Redis
+- teach Redis deeply
+- do practical coding
+- help developers become more advanced backend engineers
+
 
 
 
