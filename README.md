@@ -1,4 +1,5 @@
-# Redis-Coding
+# Redis
+Redis is a high-speed, general-purpose in-memory database and cache.
 
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
 
@@ -134,6 +135,44 @@ Example:
 - OTP valid for 90 seconds
 - After that it becomes invalid or auto-deleted
 
+## Redis Queue (Basic Problem)
+If you use:
+```
+LPUSH
+RPOP
+```
+directly as a queue, then:
+| Problem                | Explanation               |
+| ---------------------- | ------------------------- |
+| Job loss               | worker crashes after pop  |
+| No retry               | failed jobs disappear     |
+| No dead-letter queue   | failed jobs lost forever  |
+| No scheduling          | cannot delay jobs easily  |
+| Weak observability     | no dashboard              |
+| No guaranteed delivery | depends on implementation |
+
+**Production Solution**
+
+Use Redis + Queue Library.
+
+Popular choices:
+| Library | Ecosystem |
+| ------- | --------- |
+| BullMQ  | Node.js   |
+| Bull    | Node.js   |
+| Celery  | Python    |
+| Sidekiq | Ruby      |
+| RQ      | Python    |
+
+**BullMQ + Redis**
+
+Perfect for:
+- email queue
+- OTP sending
+- notifications
+- background jobs
+- async processing
+
 ## Redis is NOT a solution for every problem
 
 Don’t blindly use Redis everywhere.
@@ -146,20 +185,128 @@ Use Redis only if your problem matches scenarios like:
 - background jobs
 - caching hot data
 
-Then the speaker briefly mentions Redis alternatives:
+Redis alternatives:
 - KeyDB
 - DragonflyDB
 - Valkey
 - Upstash
 
-Most advertise themselves as “drop-in replacements” for Redis.
+## Redis Methods
+1. SET → Store Simple String Value
 
-The series goal is:
-- remove fear of Redis
-- teach Redis deeply
-- do practical coding
-- help developers become more advanced backend engineers
+Stores one value against one key.
 
+Example
+```
+await redis.set(
+  'otp:1234567890',
+  '483921'
+);
+```
 
+Redis stores:
+```
+Key   → otp:1234567890
+Value → "483921"
+```
 
+Get Value
+```
+const otp = await redis.get(
+  'otp:1234567890'
+);
+```
+
+Common Use Cases
+- OTP
+- JWT token
+- cache
+- session id
+- feature flags
+
+With Expiry
+```
+await redis.set(
+  'otp:1234567890',
+  '483921',
+  'EX',
+  30
+);
+```
+Expires in 30 seconds.
+
+2. HSET → Store Hash/Object
+
+Redis Hash = like a JavaScript object.
+
+Instead of storing one string, you store fields.
+
+Example
+```
+await redis.hset(
+  'otp:1234567890',
+  {
+    otp: '483921',
+    attempts: 0,
+    createdAt: Date.now()
+  }
+);
+```
+
+Redis internally:
+```
+Key: otp:1234567890
+
+Fields:
+  otp → 483921
+  attempts → 0
+  createdAt → 1747400000
+```
+
+Get Single Field
+```
+const otp = await redis.hget(
+  'otp:1234567890',
+  'otp'
+);
+```
+
+Update Field
+```
+await redis.hset(
+  'otp:1234567890',
+  'attempts',
+  1
+);
+```
+Common Use Cases
+user session
+profile cache
+cart data
+OTP metadata
+counters
+3. HGETALL → Read Entire Hash
+
+Gets all fields from a Redis hash.
+```
+Example
+const data = await redis.hgetall(
+  'otp:1234567890'
+);
+```
+Output:
+```
+{
+  "otp": "483921",
+  "attempts": "0",
+  "createdAt": "1747400000"
+}
+```
+IMPORTANT: Redis returns everything as strings.
+
+So:
+```
+Number(data.attempts)
+```
+may be needed.
 

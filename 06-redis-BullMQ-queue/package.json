@@ -1,0 +1,16 @@
+{
+    "name": "redis-coding",
+    "version": "1.0.0",
+    "description": "A simple Node.js application to demonstrate Redis usage.",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "api": "node src/api.js",
+        "worker": "node src/worker.js"
+    },
+    "dependencies": {
+        "express": "^4.18.3",
+        "ioredis": "^5.4.1",
+        "bullmq": "^5.4.2"
+    }
+}
