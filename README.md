@@ -3,6 +3,13 @@ Redis is a high-speed, general-purpose in-memory database and cache.
 
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
 
+```
+Redis       → cache/session/OTP
+BullMQ      → background jobs
+RabbitMQ    → enterprise messaging
+Kafka       → event streaming + analytics
+```
+
 ## Tutorials
 1. What is Redis and why it exists : https://www.youtube.com/watch?v=5YqP18Gyop0
 2. Complete local setup to learn Redis : https://www.youtube.com/watch?v=UEm0mHeXdxk
@@ -310,3 +317,74 @@ Number(data.attempts)
 ```
 may be needed.
 
+## Redis Queue vs BullMQ vs RabbitMQ vs Kafka
+| Feature                 | Redis Queue (LPUSH/BRPOP)     | BullMQ                          | RabbitMQ                         | Kafka                                |
+| ----------------------- | ----------------------------- | ------------------------------- | -------------------------------- | ------------------------------------ |
+| Type                    | Basic queue using Redis lists | Redis-based job queue framework | Message broker                   | Distributed event streaming platform |
+| Complexity              | Very simple                   | Simple–Medium                   | Medium                           | High                                 |
+| Setup                   | Easy                          | Easy                            | Medium                           | Complex                              |
+| Persistence             | Weak/basic                    | Good                            | Strong                           | Very strong                          |
+| Retry Support           | Manual                        | Built-in                        | Built-in                         | Complex/manual                       |
+| Delayed Jobs            | Manual                        | Built-in                        | Plugin/config                    | Supported via streams                |
+| Parallel Workers        | Limited/manual                | Excellent                       | Excellent                        | Excellent                            |
+| Job Scheduling          | Manual                        | Built-in                        | Supported                        | Supported                            |
+| Dead Letter Queue       | Manual                        | Built-in                        | Built-in                         | Supported                            |
+| Ordering Guarantee      | Weak                          | Good                            | Good                             | Excellent                            |
+| Scalability             | Small apps                    | Medium–Large apps               | Large systems                    | Massive distributed systems          |
+| Throughput              | High                          | High                            | High                             | Extremely high                       |
+| Durability              | Limited                       | Good                            | Strong                           | Very strong                          |
+| Message Replay          | No                            | No                              | Limited                          | Excellent                            |
+| Real-time Streaming     | No                            | No                              | Partial                          | Excellent                            |
+| Monitoring Tools        | Minimal                       | Bull Board                      | RabbitMQ UI                      | Kafka UI tools                       |
+| Best For                | Simple background tasks       | Node.js background jobs         | Reliable enterprise messaging    | Event streaming + analytics          |
+| Learning Curve          | Easy                          | Easy                            | Medium                           | Hard                                 |
+| Language Ecosystem      | Any                           | Mostly Node.js                  | Any                              | Any                                  |
+| Typical Use Cases       | Small queues                  | Emails, OTPs, notifications     | Microservices, enterprise queues | Logs, analytics, real-time pipelines |
+| Storage Backend         | Redis                         | Redis                           | Internal queues                  | Distributed log storage              |
+| Fault Tolerance         | Weak                          | Medium                          | Strong                           | Very strong                          |
+| Message Acknowledgement | Manual                        | Built-in                        | Built-in                         | Built-in                             |
+| Consumer Groups         | No                            | Limited                         | Yes                              | Yes                                  |
+| Event Replay            | No                            | No                              | Limited                          | Yes                                  |
+| Stream Processing       | No                            | No                              | Limited                          | Excellent                            |
+| Production Grade        | Small-scale only              | Yes                             | Yes                              | Yes                                  |
+| Common Companies        | Startups/small apps           | Node.js SaaS apps               | Banking/enterprise apps          | Netflix, Uber, LinkedIn              |
+
+**Practical Examples**
+| Use Case                  | Recommended Technology |
+| ------------------------- | ---------------------- |
+| OTP sending               | BullMQ                 |
+| Email queue               | BullMQ / RabbitMQ      |
+| Payment events            | RabbitMQ               |
+| Real-time analytics       | Kafka                  |
+| Notification system       | BullMQ                 |
+| Video processing pipeline | Kafka                  |
+| Chat system               | Redis Pub/Sub or Kafka |
+| Order processing          | RabbitMQ               |
+| AI event pipelines        | Kafka                  |
+
+## Why Do Companies Still Use Redis With RabbitMQ/Kafka?
+Because Redis solves DIFFERENT problems.
+
+Redis is usually used for:
+| Redis Usage     | Example            |
+| --------------- | ------------------ |
+| Cache           | API response cache |
+| Session store   | login sessions     |
+| OTP storage     | auth systems       |
+| Rate limiting   | API throttling     |
+| Real-time state | websocket presence |
+| Fast lookup     | leaderboard        |
+
+## Can RabbitMQ/Kafka Replace Redis?
+For queues/messages : YES.
+
+For cache/session/OTP : NO.
+
+Because RabbitMQ/Kafka are not optimized for:
+- fast cache lookup
+- TTL auth storage
+- sessions
+- counters
+- rate limiting
+
+Redis is much better there.
