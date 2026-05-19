@@ -5,11 +5,41 @@ on:
     branches:
       - main
 
+    types:
+      - opened
+      - edited
+      - synchronize
+
   push:
     branches:
       - main
 
 jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate Branch Naming Convention
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+
+          echo "Branch name: $BRANCH_NAME"
+
+          if [[ ! "$BRANCH_NAME" =~ ^(feature|bugfix|hotfix|release)/[a-z0-9._-]+$ ]]; then
+            echo "❌ Invalid branch name"
+
+            echo ""
+            echo "Allowed formats:"
+            echo "  feature/your-feature-name"
+            echo "  bugfix/your-fix-name"
+            echo "  hotfix/critical-fix"
+            echo "  release/v1.0.0"
+
+            exit 1
+          fi
+
+          echo "✅ Branch name is valid"
+
   lint:
     runs-on: ubuntu-latest
 
@@ -21,6 +51,7 @@ jobs:
           node-version: 20
 
       - run: npm ci
+
       - run: npm run lint
 
   typecheck:
@@ -34,6 +65,7 @@ jobs:
           node-version: 20
 
       - run: npm ci
+
       - run: npx tsc --noEmit
 
   test:
@@ -47,6 +79,7 @@ jobs:
           node-version: 20
 
       - run: npm ci
+
       - run: npm run test -- --watch=false --browsers=ChromeHeadless
 
   build:
@@ -60,4 +93,5 @@ jobs:
           node-version: 20
 
       - run: npm ci
+
       - run: npm run build
