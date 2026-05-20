@@ -1,5 +1,5 @@
 # Redis
-Redis is a high-speed, general-purpose in-memory database and cache.
+Redis is a high-speed, general-purpose in-memory database and cache. 
 
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
 
