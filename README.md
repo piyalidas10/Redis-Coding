@@ -9,10 +9,21 @@ BullMQ      → background jobs
 RabbitMQ    → enterprise messaging
 Kafka       → event streaming + analytics
 ```
-
 ## Tutorials
 1. What is Redis and why it exists : https://www.youtube.com/watch?v=5YqP18Gyop0
 2. Complete local setup to learn Redis : https://www.youtube.com/watch?v=UEm0mHeXdxk
+
+## Popular Redis Features Used in Enterprise Applications
+| Feature      | Enterprise Usage       |
+| ------------ | ---------------------- |
+| Cache        | High-speed data access |
+| Pub/Sub      | Event-driven systems   |
+| Streams      | Event processing       |
+| Cluster      | Horizontal scaling     |
+| Sentinel     | High availability      |
+| GEO          | Location services      |
+| Sorted Sets  | Rankings               |
+| Expiry (TTL) | Auto cleanup           |
 
 ## Redis
 Let’s understand Redis with an analogy.
