@@ -100,6 +100,8 @@ The database remains the “source of truth.”
 - repeated expensive queries
 
 ## Common Redis use cases
+<img src="imgs/redis_usecase.gif" width="70%" />
+
 <img src="imgs/redis_redis_use_cases.png" width="100%" />
 **1. Caching**
 
