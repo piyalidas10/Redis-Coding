@@ -1,0 +1,16 @@
+{
+    "name": "redis-pubsub",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ioredis": "^5.4.1",
+        "express": "^4.18.3"
+    }
+}
