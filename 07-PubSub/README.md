@@ -5,6 +5,9 @@
 
 Redis Pub/Sub is a lightweight, real-time messaging model where publishers send messages to named channels and all active subscribers receive them instantly. It operates on a "fire and forget" and at-most-once delivery system—if a subscriber is offline, they will permanently miss the message.
 
+## If You Need Message Persistence
+Use Redis Streams instead of Pub/Sub. Redis Streams store messages permanently.
+
 ## How It Works
 - Publishers : Broadcast messages to a specific channel without knowing who (or how many) clients are listening.
 - Subscribers: Listen to one or more channels and immediately receive any new messages broadcasted while they are connected.
@@ -217,9 +220,20 @@ WebSocket Broadcasting
 for live notifications.
 
 **But for reliable event processing:**
-``
+```
 Redis Streams
 Kafka
 RabbitMQ
 ```
 are preferred.
+
+## Pub/Sub vs Streams
+| Feature         | Pub/Sub | Streams         |
+| --------------- | ------- | --------------- |
+| Real-time       | ✅       | ✅               |
+| Persistent      | ❌       | ✅               |
+| Replay messages | ❌       | ✅               |
+| Consumer groups | ❌       | ✅               |
+| Fastest         | ✅       | Slightly slower |
+| Durable         | ❌       | ✅               |
+
