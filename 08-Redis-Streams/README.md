@@ -68,6 +68,15 @@ Redis Pub/Sub does not store messages.
 + Real-time analytics
 + Task queues (alternative to Kafka-lite setups)
 
+## ⚡ Redis Streams vs Pub/Sub
+| Feature                | Redis Pub/Sub | Redis Streams |
+| ---------------------- | ------------- | ------------- |
+| Persistence            | ❌ No          | ✅ Yes         |
+| Replay                 | ❌ No          | ✅ Yes         |
+| Consumer Groups        | ❌ No          | ✅ Yes         |
+| Message Acknowledgment | ❌ No          | ✅ Yes         |
+| Reliability            | Low           | High          |
+
 ## ⚖️ Redis Streams vs Other Tools
 | Feature     | Redis Streams | Kafka           |
 | ----------- | ------------- | --------------- |
@@ -80,5 +89,16 @@ Redis Pub/Sub does not store messages.
 Not ideal for huge distributed systems like Kafka
 Memory usage can grow (needs trimming via XTRIM)
 
-
+## Example Senior-Level Architecture
+```
+Angular Frontend
+      ↓
+Node.js API
+      ↓
+Redis Stream
+      ↓
+Consumer Group
+ ┌────────┬────────┬────────┐
+ Email    Billing   Analytics
+```
 
