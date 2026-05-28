@@ -1,8 +1,8 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const Redis = require("ioredis");
-const cors = require("cors");
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import Redis from "ioredis";
+import cors from "cors";
 
 const app = express();
 

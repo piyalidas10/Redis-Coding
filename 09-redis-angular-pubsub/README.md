@@ -1,4 +1,7 @@
-# Redis realtime example with Angular
+# Real-time System with Redis PUB/SUB + Socket.io + Angular
+
+<img src="imgs/pubsub_redis_angular.png" />
+
 Here’s a complete real-time example using:
 - Redis
 - ioredis
@@ -17,13 +20,75 @@ Redis Pub/Sub
 Publisher Service
 ```
 
-This is the common production pattern for:
-- live notifications
-- chat apps
-- dashboards
-- stock updates
-- order tracking
-- multiplayer apps
+## How Pub/Sub Works
+```
+Publisher  --->  Redis Channel  --->  Subscriber
+```
+Redis simply broadcasts messages to currently connected subscribers.
+
+## Limitation
+
+Redis Pub/Sub is:
+- transient
+- fire-and-forget
+- no persistence
+- no acknowledgment
+- no replay
+
+It behaves like live radio broadcasting. If radio was playing before you tuned in, you missed it.
+
+## Run Application
+
+1. Run Redis using Docker
+```
+docker run -d --name redis-server -p 6379:6379 redis
+```
+
+2. Start Angular
+```
+cd frontend
+npm start
+```
+
+3. Start Backend
+CMD / Terminal 1
+```
+cd backend
+node src/server.js
+```
+CMD / Terminal 2
+```
+cd backend
+node src/publisher.js
+```
+
+<img src="imgs/node_run.png" />
+
+4. Run browser 
+```
+http://localhost:4200
+```
+
+**Expected Angular UI**
+```
+Live updates every 5 seconds without refresh.
+``` 
+<img src="imgs/run.png" />
+
+## What Happens
+
+Every 5 seconds:
+```
+publisher.js
+```
+publishes message to Redis.
+
+Redis subscriber receives it.
+
+Socket.IO broadcasts it.
+
+Angular UI updates instantly without refresh.
+
 
 ## Project Structure
 ```

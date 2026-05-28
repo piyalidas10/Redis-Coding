@@ -1,0 +1,18 @@
+<h1>Redis Real-time Notifications</h1>
+
+@for (item of notifications; track item.id) {
+    <div
+    style="
+      border:1px solid #ccc;
+      margin:10px;
+      padding:10px;
+      border-radius:8px;
+    "
+  >
+    <h3>{{ item.title }}</h3>
+
+    <p>{{ item.time }}</p>
+  </div>
+  } @empty {
+    <h4>No notifications found.</h4>
+  }
