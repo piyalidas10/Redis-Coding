@@ -26,9 +26,7 @@ Publisher  --->  Redis Channel  --->  Subscriber
 ```
 Redis simply broadcasts messages to currently connected subscribers.
 
-## Limitation
-
-Redis Pub/Sub is:
+## Limitation of Redis Pub/Sub
 - transient
 - fire-and-forget
 - no persistence
