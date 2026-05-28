@@ -44,7 +44,7 @@ node src/publisher.js
 ```
 
 <img src="imgs/run.png" width="100%" />
-<img src="imgs/pubsub.png" width="100%" />
+<img src="imgs/run_pubsub.png" width="100%" />
 
 
 ## Architecture
