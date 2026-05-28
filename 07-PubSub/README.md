@@ -32,12 +32,12 @@ docker compose up -d
 
 CMD or Terminal 1 - Subscriber First ✅
 ```
-node subscriber.js
+node src/subscriber.js
 ```
 
 CMD or Terminal 2
 ```
-node publisher.js
+node src/publisher.js
 ```
 
 <img src="imgs/run.png" width="100%" />
