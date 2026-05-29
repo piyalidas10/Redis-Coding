@@ -7,6 +7,30 @@ Redis is a high-speed, general-purpose in-memory database and cache.
 
 **It stores data in key-value format and keeps it in RAM, so it’s extremely fast (microseconds latency).**
 
+Redis is an in-memory database widely used as a distributed cache. Its "types" generally fall into two categories: Data Structures (what you store) and Caching Patterns (how you store and retrieve it).
+
+**Data Structures**
+```
+Strings
+Hashes
+Lists
+Sets
+Sorted Sets (ZSETs)
+Streams
+Geospatial Indexes
+Bitmaps & Bitfields
+HyperLogLogs
+JSON
+```
+
+**Caching Patterns**
+```
+Cache-Aside (Lazy Loading)
+Write-Through
+Write-Behind
+Read-Through
+```
+
 Nowadays database boundaries are getting blurred. Even PostgreSQL can be used somewhat like Redis. So some of the things I’ll say are opinions — standard opinions — but they can be challenged because databases evolve very fast these days.
 
 ```
@@ -103,6 +127,7 @@ The database remains the “source of truth.”
 <img src="imgs/redis_usecase.gif" width="70%" />
 
 <img src="imgs/redis_redis_use_cases.png" width="100%" />
+
 **1. Caching**
 
 Store frequently accessed data like product lists, menus, etc.
