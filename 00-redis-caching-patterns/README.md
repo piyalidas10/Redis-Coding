@@ -7,6 +7,7 @@ Redis caching patterns are common strategies used to improve application perform
 1. Redis Cache : https://www.geeksforgeeks.org/system-design/redis-cache/
 2. Caching Strategies | System Design Interview | Write-Through, Write-Back, Cache Aside, Read-Through : https://www.youtube.com/watch?v=Cm7gem9mBeg
 3. REST API Caching Strategies Every Developer Must Know : https://www.youtube.com/watch?v=TV-xsNjbx_g
+4. Caching in System Design Interviews w/ Meta Staff Engineer : https://www.youtube.com/watch?v=1NngTUYPdpI
 
 ## Here are the most important Redis caching patterns used in real-world systems and interviews.
 

@@ -1,0 +1,56 @@
+<div class="dashboard">
+
+    <button class="btn btn-primary" (click)="loadOrder()">
+        Load Order
+    </button>
+
+    <hr>
+
+    @if (loading) {
+    <h4>Loading Order...</h4>
+    }
+
+    @if (order && !loading) {
+    <div class="card">
+
+        <div class="card-header">
+            Order Details
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>ID:</strong>
+                {{ order.id }}
+            </p>
+
+            <p>
+                <strong>Title:</strong>
+                {{ order.title }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+
+                <span [ngClass]="{
+              'created': order.status === 'CREATED',
+              'processing': order.status === 'PROCESSING',
+              'completed': order.status === 'COMPLETED'
+            }">
+
+                    {{ order.status }}
+                </span>
+            </p>
+
+            <p>
+                <strong>Last Updated:</strong>
+
+                {{ order.time || 'N/A' }}
+            </p>
+
+        </div>
+
+    </div>
+    }
+
+</div>
