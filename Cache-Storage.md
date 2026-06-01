@@ -345,12 +345,12 @@ Static Files      → CDN + Browser Cache
 
 # Interview Summary
 ```
-localStorage   → Persistent client data (theme, wishlist)
-sessionStorage → Temporary tab data (checkout, filters)
-Cookies        → Authentication (session, refresh token)
+localStorage   → Persistent client data (Theme, Language, Wishlist, Recently Viewed Products)
+sessionStorage → Temporary tab data (Wizard Forms, Checkout Steps, Search Filters)
+Cookies        → Store server-related information (Session ID, Refresh Token, Authentication Cookies, CSRF Token)
 Memory         → Access token (JWT)
-Browser Cache  → JS, CSS, Images, Videos
-Redis          → Sessions, API cache, carts, page views
+Browser Cache  → JS Files, CSS Files, Images, Videos, Fonts
+Redis          → Sessions, Page Views, Shopping Cart, API Responses, Rate Limiting
 CDN            → Product images & videos
 ```
 
@@ -364,6 +364,126 @@ CDN            → Product images & videos
 | Accessible via JS            | ✅ Yes            | ✅ Yes              | Usually Yes (unless HttpOnly) |
 | Best For                     | User preferences | Temporary tab data | Authentication                |
 
+## 1. localStorage
 
+**Persistent storage that remains even after the browser is closed.**
+```
+localStorage.setItem('theme', 'dark');
+```
+
+**Typical Use Cases**    
+**User Preferences**
+```
+Theme = Dark
+Language = English
+Sidebar = Collapsed
+```
+**Recently Viewed Products**
+```
+Product 1001
+Product 1002
+Product 1003
+```
+**Offline Data**
+```
+Draft Form
+Unsaved Notes
+```
+**E-commerce Example**
+```
+{
+  "wishlist": [101,102,103]
+}
+```
+**Not Recommended For**
+- Access Token
+- Refresh Token
+- Session Token
+- Password
+
+Because JavaScript can read it:
+```
+localStorage.getItem('token');
+```
+making it vulnerable to XSS attacks.
+
+## 2. sessionStorage
+
+**Data survives only for the current browser tab.**
+```
+sessionStorage.setItem('step', '2');
+```
+**When the tab closes:**
+```
+Data Deleted
+```
+**Typical Use Cases**  
+**Multi-Step Forms**
+```
+Step 1 Completed
+Step 2 Completed
+```
+**Temporary Search Filters**
+```
+Category = Electronics
+Price = 1000
+```
+**Checkout Progress**
+```
+Cart
+↓
+Shipping
+↓
+Payment
+```
+**Example**
+```
+{
+  "checkoutStep": 3
+}
+```
+**Why Not localStorage?** If the user closes the tab and returns next week, the checkout state may no longer be valid.
+
+## 3. Cookies
+**Small pieces of data automatically sent with every HTTP request.**
+```
+Cookie:
+sessionId=abc123
+```
+**Typical Use Cases**  
+**Authentication**
+```
+Session ID
+Refresh Token
+CSRF Token
+```
+**User Tracking**
+```
+Google Analytics
+Facebook Pixel
+```
+**User Preferences (Server Needs Them)**
+```
+Language=en
+Currency=INR
+```
+
+# Why Cookies for Authentication?
+
+When a user logs in:
+```
+Browser
+   |
+   v
+Cookie(sessionId)
+   |
+   v
+Backend
+```
+Every request automatically includes:
+```
+Cookie: sessionId=abc123
+```
+The backend can identify the user without frontend code attaching tokens manually.
 
 
