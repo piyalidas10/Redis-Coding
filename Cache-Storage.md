@@ -1,4 +1,5 @@
 # Real Enterprise Architecture
+<img src="imgs/Webstorage-cache-Redis.png" width="100%" />
 ```
 ┌───────────────────────────────────────────────────────────┐
 │                       USER BROWSER                        │
