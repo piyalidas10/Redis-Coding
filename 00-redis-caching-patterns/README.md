@@ -16,6 +16,35 @@ Redis caching patterns are common strategies used to improve application perform
 - **Write-Behind:** The application writes immediately to the cache, returning success to the user. An asynchronous process updates the primary database later.
 - **Read-Through:** Configures the cache itself to handle reading from the underlying database automatically when a cache miss occurs.
 
+| Pattern       | Read Speed           | Write Speed | Consistency         | Complexity |
+| ------------- | -------------------- | ----------- | ------------------- | ---------- |
+| Cache Aside   | Fast after first hit | Normal      | Medium              | Low        |
+| Read Through  | Fast                 | Normal      | Medium              | Medium     |
+| Write Through | Fast                 | Slower      | High                | Medium     |
+| Write Behind  | Fast                 | Very Fast   | Lower               | High       |
+| Prefetching   | Fastest              | N/A         | High (if refreshed) | Medium     |
+
+## Real E-Commerce Architecture
+
+A large e-commerce platform often combines multiple patterns:
+```
+                     Product Catalog
+                           |
+                           v
+                      Prefetching
+                           |
+                           v
+                         Redis
+
+User Profile  ---> Cache Aside ---> Redis
+
+Order Service ---> Write Through ---> Redis + DB
+
+Analytics ---> Write Behind ---> Redis ---> DB
+
+Microservices ---> Read Through Layer ---> Redis
+```
+
 ### 1. Cache Aside (Lazy Loading)
 
 Most commonly used pattern.
@@ -27,13 +56,21 @@ If data is missing → fetch from DB → store in Redis → return response.
 
 **Flow**
 ```
-Client
-  ↓
-Application
-  ↓
-Redis Cache
-   ↙ miss
-Database
+         Read Request (Client)
+               |
+               v
+           Redis?
+          /      \
+      HIT         MISS
+       |            |
+       v            v
+    Return      Database
+                  |
+                  v
+             Store in Redis
+                  |
+                  v
+               Return
 ```
 
 **Steps**
@@ -67,30 +104,41 @@ async function getUser(id: string) {
 ```
 
 **Advantages**
-- Simple
-- Cost efficient
-- Only cache frequently accessed data
+- ✅ Simple
+- ✅ Cost efficient
+- ✅ Only cache frequently accessed data
 
 **Problems**
-- Cache miss latency
-- Stale data possible
+- ❌ Cache miss latency
+- ❌ Stale data possible
+- ❌ First request is slow
 
 **Real-world use**
 - User profiles
-- Product pages
+- E-commerce products pages
+- Catalog data
 - Angular dashboard APIs
 
 ### 2. Write Through Cache
 
-Write to cache and DB together.
+Every write goes to both Redis and Database.
 
 **Flow**
 ```
-Application
-   ↓
-Redis Cache
-   ↓
-Database
+          Update User
+                |
+                v
+           Application
+                |
+      -------------------
+      |                 |
+      v                 v
+    Redis          Database
+      |                 |
+      -------------------
+                |
+                v
+             Success
 ```
 
 **Steps**
@@ -101,63 +149,113 @@ Database
 ```
 await redis.set(`user:${id}`, JSON.stringify(user));
 await db.users.update(user);
+
+PUT /users/100
+SET user:100 {...}
+UPDATE users SET ...
 ```
 
 **Advantages**
-- Cache always fresh
-- Faster reads
+- ✅ Cache always fresh
+- ✅ Faster reads
+- ✅ Strong consistency
 
 **Problems**
-- Higher write latency
-- Unused data also cached
+- ❌ Higher write latency
+- ❌ Unused data also cached
 
 **Use cases**
 - Banking systems
 - Session data
 - Frequently read data
+- Financial applications
+- Order management systems
 
 ### 3. Write Behind (Write Back)
 
-Writes go to Redis first.   
-DB updated asynchronously later.
+Writes go to Redis first. Database update happens later asynchronously.
 
 **Flow**
 ```
-Application
-   ↓
-Redis
-   ↓ async
-Database
+                Write
+                  |
+                  v
+               Redis
+                  |
+         Immediate Response
+                  |
+                  v
+          Background Worker
+                  |
+                  v
+              Database
+```
+
+Example
+```
+Checkout Order
+
+Write: SET order:123
+
+Response: 200 OK
+
+Later: INSERT INTO Orders ...
 ```
 
 **Advantages**
-- Very fast writes
-- High throughput
+- ✅ Extremely fast writes
+- ✅ Reduced DB load
+- ✅ Excellent throughput
 
 **Problems**
-- Risk of data loss
-- Complex consistency
+- ❌ Risk of data loss if Redis crashes before DB sync
+- ❌ Complex recovery logic
 
 **Use cases**
 - Analytics
 - Logging systems
 - IoT telemetry
+- High-volume checkout systems
+- Gaming leaderboards
 
 ### 4. Read Through Cache
 
-Cache itself fetches data from DB automatically.
-
-Application talks only to cache.
+Cache itself fetches data from DB automatically. Application talks only to cache.
 
 **Flow**
 ```
 Application
-    ↓
-Redis Layer
-    ↓
-Database
+      |
+      v
+    Redis
+      |
+      | Cache Miss
+      v
+ Database
+      |
+      v
+  Redis stores data
+      |
+      v
+ Application gets data
 ```
 Usually implemented using custom middleware.
+
+**Comparison**
+```
+Cache-Aside
+App -> Redis
+       |
+       v
+       DB
+
+Read-Through
+App -> Redis Layer
+           |
+           v
+           DB
+```
+Application manages cache.
 
 **Advantages**
 - Cleaner app code
@@ -166,7 +264,58 @@ Usually implemented using custom middleware.
 **Problems**
 - More infrastructure complexity
 
-### 5. Refresh Ahead Cache
+### 5. Cache Prefetching (Proactive Caching)
+Load data into Redis before users ask for it.
+
+**Flow**
+```
+Nightly Job
+     |
+     v
+ Database
+     |
+     v
+ Redis
+     |
+     v
+Application Reads
+```
+
+**Example**  
+Every night:
+```
+SELECT * FROM Countries
+SELECT * FROM States
+SELECT * FROM Product Categories
+```
+Store in Redis:
+```
+countries
+states
+categories
+```
+When user requests:
+```
+Redis HIT
+```
+No DB call needed.
+
+**Advantages**
+- ✅ Near 100% cache hit ratio
+- ✅ Extremely fast reads
+- ✅ Minimal DB load
+
+**Disadvantages**
+- ❌ Uses memory for unused data
+- ❌ Needs refresh strategy
+
+**Best For**
+- Master data
+- Product catalogs
+- Lookup tables
+- Configuration data
+
+### 6. Refresh Ahead Cache
 
 Refresh cache before expiry.
 
@@ -185,7 +334,7 @@ TTL remaining < 2 mins
 - Live dashboards
 - Stock prices
 
-### 6. Write Around Cache
+### 7. Write Around Cache
 
 Writes go directly to DB.  
 Cache updated only during reads.  
@@ -205,7 +354,7 @@ Read → Cache Aside
 - Large datasets
 - Rarely read records
 
-### 7. Cache Stampede Protection
+### 8. Cache Stampede Protection
 
 Prevents multiple requests from hitting DB simultaneously when cache expires.
 
@@ -232,7 +381,7 @@ Background Refresh
 Refresh before expiry.
 ```
 
-### 8. Distributed Cache Pattern
+### 9. Distributed Cache Pattern
 
 Multiple application servers share same Redis cache.
 
@@ -252,7 +401,7 @@ Node1   Node2
 - Horizontal scaling
 - Centralized sessions
 
-### 9. Session Cache Pattern
+### 10. Session Cache Pattern
 
 Store user sessions in Redis.
 
@@ -271,7 +420,7 @@ session:12345 → user data
 - Angular
 - OAuth2/OIDC systems
 
-### 10. CQRS + Redis Cache
+### 11. CQRS + Redis Cache
 
 Redis used as optimized read model.
 
@@ -286,7 +435,7 @@ Reads become extremely fast.
 - Analytics
 - Real-time dashboards
 
-### 11. Redis Pub/Sub Cache Invalidation
+### 12. Redis Pub/Sub Cache Invalidation
 
 **When data changes:**
 - publish invalidation event
