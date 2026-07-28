@@ -7,6 +7,11 @@ Redis is a high-speed, general-purpose in-memory database and cache.
 
 <img src="imgs/Redis.png" width="90%" />
 
+## Tutorials 
+1. How WhatsApp Knows You're Online Right Now (Redis Internals) : https://www.youtube.com/watch?v=zcbVrwS8_Ow
+
+## Redis Data Types
+
 **It stores data in key-value format and keeps it in RAM, so it’s extremely fast (microseconds latency).**
 
 Redis is an in-memory database widely used as a distributed cache. Its "types" generally fall into two categories: Data Structures (what you store) and Caching Patterns (how you store and retrieve it).
